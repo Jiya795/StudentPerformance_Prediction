@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-07-07 05:54:15",
+  "leakage_analysis": {
+    "note": "G1/G2 are prior-period grades and are strongly correlated with the final grade G3 by construction. Numbers below show how much of the model's accuracy actually comes from G1/G2 vs. the behavioural/demographic features. The deployed model still uses G1/G2 because the product intentionally asks users for their in-progress grades, but this is reported here for transparency.",
+    "classifier_accuracy_with_G1_G2": 0.87,
+    "classifier_accuracy_without_G1_G2": 0.638,
+    "regressor_r2_with_G1_G2": 0.8048,
+    "regressor_r2_without_G1_G2": 0.2141
+  },
+  "model_comparison": {
+    "classifier": {
+      "logistic_regression_cv_accuracy": 0.9225,
+      "random_forest_cv_accuracy": 0.8625,
+      "chosen": "logistic_regression"
+    },
+    "regressor": {
+      "linear_regression_cv_r2": 0.8821,
+      "random_forest_cv_r2": 0.777,
+      "chosen": "linear_regression"
+    }
+  },
+  "hyperparameter_search": {
+    "classifier_rf_best_params": {
+      "max_depth": 6,
+      "min_samples_leaf": 1,
+      "n_estimators": 200
+    },
+    "classifier_rf_best_cv_accuracy": 0.8875,
+    "regressor_rf_best_params": {
+      "max_depth": null,
+      "min_samples_leaf": 2,
+      "n_estimators": 100
+    },
+    "regressor_rf_best_cv_r2": 0.7806
+  },
+  "deployed_model": {
+    "classifier": "logistic_regression",
+    "regressor": "linear_regression",
+    "reasoning": "Each candidate was scored with the same 5-fold cross-validation; the model with the higher CV score was deployed rather than defaulting to Random Forest."
+  },
+  "final_test_set_performance": {
+    "classifier_accuracy": 0.87,
+    "classifier_precision": 0.9216,
+    "classifier_recall": 0.8393,
+    "classifier_f1": 0.8785,
+    "regressor_r2": 0.8475,
+    "regressor_rmse": 1.7166,
+    "train_samples": 400,
+    "test_samples": 100,
+    "total_samples": 500,
+    "n_features": 12
+  }
+}

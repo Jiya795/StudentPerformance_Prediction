@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Predict Student Performance{% endblock %}
+{% block content %}
+
+<div class="text-center mb-10">
+  <h2 class="text-4xl font-bold text-gray-800 mb-3">Predict Your Academic Performance</h2>
+  <p class="text-gray-500 text-lg max-w-xl mx-auto">Fill in your details below. Our ML model will predict your final grade and give personalized improvement tips.</p>
+  <div class="flex justify-center gap-6 mt-6">
+    <div class="text-center">
+      <p class="text-2xl font-bold text-purple-600">{{ (metrics.final_test_set_performance.classifier_accuracy * 100) | round(1) if metrics.final_test_set_performance else '—' }}%</p>
+      <p class="text-xs text-gray-400">Model Accuracy (test set)</p>
+    </div>
+    <div class="w-px bg-gray-200"></div>
+    <div class="text-center">
+      <p class="text-2xl font-bold text-purple-600">{{ metrics.final_test_set_performance.total_samples if metrics.final_test_set_performance else '500+' }}</p>
+      <p class="text-xs text-gray-400">Students Trained On</p>
+    </div>
+    <div class="w-px bg-gray-200"></div>
+    <div class="text-center">
+      <p class="text-2xl font-bold text-purple-600">{{ metrics.final_test_set_performance.n_features if metrics.final_test_set_performance else 12 }}</p>
+      <p class="text-xs text-gray-400">Features Analyzed</p>
+    </div>
+  </div>
+</div>
+
+<form action="/predict" method="POST">
+
+  <!-- Student Name -->
+  <div class="card p-6 mb-6">
+    <div class="max-w-sm">
+      <label class="block text-sm font-medium text-gray-600 mb-1">Student Name</label>
+      <input type="text" name="student_name" placeholder="Enter your full name" required
+        class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Academic Info -->
+    <div class="card p-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-5 pb-3 border-b border-gray-100">
+        Academic Information
+      </h3>
+      <div class="space-y-4">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Study Time per Week</label>
+          <select name="studytime" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1">Less than 2 hours</option>
+            <option value="2" selected>2 to 5 hours</option>
+            <option value="3">5 to 10 hours</option>
+            <option value="4">More than 10 hours</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Number of Past Failures</label>
+          <select name="failures" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="0" selected>0 — None</option>
+            <option value="1">1 subject</option>
+            <option value="2">2 subjects</option>
+            <option value="3">3 or more</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Number of Absences <span class="text-gray-400">(0–30)</span></label>
+          <input type="number" name="absences" value="5" min="0" max="30"
+            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">1st Period Grade <span class="text-gray-400">(G1, 0–20)</span></label>
+            <input type="number" name="G1" value="12" min="0" max="20"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">2nd Period Grade <span class="text-gray-400">(G2, 0–20)</span></label>
+            <input type="number" name="G2" value="12" min="0" max="20"
+              class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Wants Higher Education?</label>
+          <select name="higher" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Internet Access at Home?</label>
+          <select name="internet" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1" selected>Yes</option>
+            <option value="0">No</option>
+          </select>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="card p-6">
+      <h3 class="text-lg font-semibold text-gray-700 mb-5 pb-3 border-b border-gray-100">
+        Personal &amp; Family Information
+      </h3>
+      <div class="space-y-4">
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Mother's Education</label>
+            <select name="Medu" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+              <option value="0">None</option>
+              <option value="1">Primary (4th grade)</option>
+              <option value="2" selected>5th–9th grade</option>
+              <option value="3">Secondary</option>
+              <option value="4">Higher education</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Father's Education</label>
+            <select name="Fedu" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+              <option value="0">None</option>
+              <option value="1">Primary (4th grade)</option>
+              <option value="2" selected>5th–9th grade</option>
+              <option value="3">Secondary</option>
+              <option value="4">Higher education</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Current Health Status</label>
+          <select name="health" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1">1 — Very bad</option>
+            <option value="2">2 — Bad</option>
+            <option value="3" selected>3 — Average</option>
+            <option value="4">4 — Good</option>
+            <option value="5">5 — Very good</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Quality of Family Relationships</label>
+          <select name="famrel" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1">1 — Very bad</option>
+            <option value="2">2 — Bad</option>
+            <option value="3" selected>3 — Average</option>
+            <option value="4">4 — Good</option>
+            <option value="5">5 — Excellent</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Free Time After School</label>
+          <select name="freetime" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+            <option value="1">1 — Very low</option>
+            <option value="2">2 — Low</option>
+            <option value="3" selected>3 — Medium</option>
+            <option value="4">4 — High</option>
+            <option value="5">5 — Very high</option>
+          </select>
+        </div>
+
+        <div class="pt-4 mt-2 border-t border-gray-100">
+          <div class="bg-purple-50 rounded-xl p-4 text-sm text-purple-700">
+            <p class="font-medium mb-1">How it works</p>
+            <p class="text-purple-600 text-xs leading-relaxed">
+              {% if metrics.deployed_model %}
+                Our {{ metrics.deployed_model.classifier.replace('_', ' ') }} model analyzes {{ metrics.final_test_set_performance.n_features }} factors to predict your final grade (0–20) and classify Pass or Fail with {{ (metrics.final_test_set_performance.classifier_accuracy * 100) | round(1) }}% accuracy on held-out test data.
+              {% else %}
+                Our model analyzes 12 factors to predict your final grade (0–20) and classify Pass or Fail.
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-8">
+    <button type="submit"
+      class="gradient-bg text-white px-12 py-4 rounded-2xl text-lg font-semibold shadow-lg hover:opacity-90 transition-all hover:scale-105 active:scale-95">
+      Predict My Performance
+    </button>
+    <p class="text-gray-400 text-sm mt-3">Results are instant and include personalized improvement tips</p>
+  </div>
+</form>
+
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — EduPredict{% endblock %}
+{% block content %}
+
+<div class="mb-8">
+  <h2 class="text-3xl font-bold text-gray-800 mb-2">Data Dashboard</h2>
+  <p class="text-gray-500">Insights from the student dataset used to train the prediction model.</p>
+</div>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div class="card p-5 text-center">
+    <p class="text-3xl font-bold text-purple-600">{{ stats.total }}</p>
+    <p class="text-sm text-gray-400 mt-1">Total Students</p>
+  </div>
+  <div class="card p-5 text-center">
+    <p class="text-3xl font-bold text-green-500">{{ stats.pass_rate }}%</p>
+    <p class="text-sm text-gray-400 mt-1">Pass Rate</p>
+  </div>
+  <div class="card p-5 text-center">
+    <p class="text-3xl font-bold text-blue-500">{{ stats.avg_grade }}</p>
+    <p class="text-sm text-gray-400 mt-1">Avg Final Grade</p>
+  </div>
+  <div class="card p-5 text-center">
+    <p class="text-3xl font-bold text-amber-500">{{ (metrics.final_test_set_performance.classifier_accuracy * 100) | round(1) if metrics.final_test_set_performance else '—' }}%</p>
+    <p class="text-sm text-gray-400 mt-1">Model Accuracy (test set)</p>
+  </div>
+</div>
+
+<!-- Charts Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Feature Importance</h3>
+    <p class="text-xs text-gray-400 mb-3">Which factors matter most in predicting performance</p>
+    <img src="/static/charts/feature_importance.png" alt="Feature Importance Chart" class="w-full rounded-lg">
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Grade Distribution</h3>
+    <p class="text-xs text-gray-400 mb-3">Distribution of final grades (pass vs fail)</p>
+    <img src="/static/charts/grade_dist.png" alt="Grade Distribution Chart" class="w-full rounded-lg">
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Study Time vs Average Grade</h3>
+    <p class="text-xs text-gray-400 mb-3">Impact of weekly study hours on final grade</p>
+    <img src="/static/charts/studytime_grade.png" alt="Study Time vs Grade Chart" class="w-full rounded-lg">
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Feature Correlation Heatmap</h3>
+    <p class="text-xs text-gray-400 mb-3">How features relate to each other and to G3</p>
+    <img src="/static/charts/correlation.png" alt="Correlation Heatmap" class="w-full rounded-lg">
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Confusion Matrix</h3>
+    <p class="text-xs text-gray-400 mb-3">Pass/Fail predictions vs actual outcomes on the held-out test set</p>
+    <img src="/static/charts/confusion_matrix.png" alt="Confusion Matrix" class="w-full rounded-lg max-w-xs mx-auto">
+  </div>
+
+  <div class="card p-5">
+    <h3 class="font-semibold text-gray-700 mb-3">Data Leakage Check</h3>
+    <p class="text-xs text-gray-400 mb-3">How much accuracy comes from G1/G2 (prior grades) vs. everything else</p>
+    <img src="/static/charts/leakage_comparison.png" alt="Leakage Comparison Chart" class="w-full rounded-lg">
+  </div>
+
+</div>
+
+<!-- Model Info -->
+<div class="card p-6 mt-6">
+  <h3 class="font-semibold text-gray-700 mb-4">About the Model</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+    <div class="bg-purple-50 rounded-xl p-4">
+      <p class="font-medium text-purple-700 mb-1">Algorithm</p>
+      <p class="text-purple-600">
+        {% if metrics.deployed_model %}
+          {{ metrics.deployed_model.classifier.replace('_', ' ') | title }} (classifier) +
+          {{ metrics.deployed_model.regressor.replace('_', ' ') | title }} (regressor)
+        {% else %}
+          Random Forest Classifier + Regressor
+        {% endif %}
+      </p>
+    </div>
+    <div class="bg-blue-50 rounded-xl p-4">
+      <p class="font-medium text-blue-700 mb-1">Training Data</p>
+      <p class="text-blue-600">
+        {% if metrics.final_test_set_performance %}
+          {{ metrics.final_test_set_performance.train_samples }} students (80% split), {{ metrics.final_test_set_performance.n_features }} features
+        {% else %}
+          400 students (80% split), 12 features
+        {% endif %}
+      </p>
+    </div>
+    <div class="bg-green-50 rounded-xl p-4">
+      <p class="font-medium text-green-700 mb-1">Performance (test set)</p>
+      <p class="text-green-600">
+        {% if metrics.final_test_set_performance %}
+          {{ (metrics.final_test_set_performance.classifier_accuracy * 100) | round(1) }}% accuracy · R² = {{ metrics.final_test_set_performance.regressor_r2 }}
+        {% else %}
+          — run model.py to generate metrics
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if metrics.model_comparison %}
+  <div class="mt-4 bg-gray-50 rounded-xl p-4 text-xs text-gray-500 leading-relaxed">
+    <p class="font-medium text-gray-600 mb-1">Why this model?</p>
+    <p>Random Forest, Logistic Regression, and Linear Regression were all cross-validated on the same folds.
+      Classifier: Logistic Regression scored {{ (metrics.model_comparison.classifier.logistic_regression_cv_accuracy * 100) | round(1) }}% vs. Random Forest's {{ (metrics.model_comparison.classifier.random_forest_cv_accuracy * 100) | round(1) }}%.
+      Regressor: Linear Regression scored R²={{ metrics.model_comparison.regressor.linear_regression_cv_r2 }} vs. Random Forest's R²={{ metrics.model_comparison.regressor.random_forest_cv_r2 }}.
+      The higher-scoring model of each pair was deployed.</p>
+  </div>
+  {% endif %}
+
+  {% if metrics.leakage_analysis %}
+  <div class="mt-4 bg-amber-50 rounded-xl p-4 text-xs text-amber-700 leading-relaxed">
+    <p class="font-medium mb-1">Data leakage note</p>
+    <p>G1 and G2 (1st/2nd period grades) are strongly predictive of the final grade G3 by construction. With G1/G2 included, classifier accuracy is {{ (metrics.leakage_analysis.classifier_accuracy_with_G1_G2 * 100) | round(1) }}%; without them it drops to {{ (metrics.leakage_analysis.classifier_accuracy_without_G1_G2 * 100) | round(1) }}%. The deployed model keeps G1/G2 since the product asks for in-progress grades by design — but the gap is reported here for transparency rather than hidden behind one headline number.</p>
+  </div>
+  {% endif %}
+</div>
+
+<div class="text-center mt-8">
+  <a href="/" class="gradient-bg text-white px-8 py-3 rounded-xl font-medium hover:opacity-90 transition-all inline-block">
+    Make a Prediction
+  </a>
+</div>
+
+{% endblock %}

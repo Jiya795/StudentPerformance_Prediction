@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Student Performance Predictor{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .card { background: white; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04); }
+    .nav-link { transition: all 0.2s; }
+    .nav-link:hover { background: rgba(255,255,255,0.15); border-radius: 8px; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <nav class="gradient-bg text-white px-6 py-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-sm font-bold">EP</div>
+        <div>
+          <h1 class="font-bold text-lg leading-tight">EduPredict</h1>
+          <p class="text-xs text-purple-200">Student Performance Predictor</p>
+        </div>
+      </div>
+      <div class="flex gap-1">
+        <a href="/" class="nav-link px-4 py-2 text-sm font-medium">Home</a>
+        <a href="/dashboard" class="nav-link px-4 py-2 text-sm font-medium">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="text-center py-6 text-gray-400 text-sm mt-8">
+    <p>Built by <span class="text-purple-500 font-medium">Jiya Gupta</span> · Python + Flask + Scikit-learn · 
+    <a href="https://github.com/Jiya795" class="text-purple-400 hover:underline" target="_blank">GitHub</a></p>
+  </footer>
+
+</body>
+</html>
