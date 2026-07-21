@@ -24,13 +24,10 @@ try:
     with open('metrics.json') as f:
         METRICS = json.load(f)
 except FileNotFoundError:
-    # Falls back gracefully if model.py hasn't been run yet in this environment.
+    
     METRICS = {}
     logger.warning('metrics.json not found — run `python model.py` to generate it.')
 
-# Valid (inclusive) ranges for every field the model expects. Anything outside
-# these gets rejected with a clear message instead of silently feeding garbage
-# into the model or leaking a raw stack trace to the user.
 FIELD_RANGES = {
     'studytime': (1, 4),
     'failures': (0, 4),

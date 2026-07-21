@@ -56,9 +56,6 @@ cv_reg = KFold(n_splits=5, shuffle=True, random_state=42)
 
 metrics = {"generated_at": time.strftime("%Y-%m-%d %H:%M:%S")}
 
-# ---------------------------------------------------------------------------
-# 1. Data leakage check: how much do G1/G2 alone explain G3?
-# ---------------------------------------------------------------------------
 scaler_full = StandardScaler()
 X_full_scaled = scaler_full.fit_transform(X)
 X_noleak = df[FEATURES_NO_LEAK]
@@ -87,9 +84,6 @@ metrics['leakage_analysis'] = {
     "regressor_r2_without_G1_G2": round(float(r2_without_leak), 4),
 }
 
-# ---------------------------------------------------------------------------
-# 2. Model comparison (baseline vs Random Forest) via cross-validation
-# ---------------------------------------------------------------------------
 acc_logreg = cross_val_score(LogisticRegression(max_iter=1000), X_train_s, yc_train,
                               cv=cv_class, scoring='accuracy').mean()
 acc_rf = cross_val_score(RandomForestClassifier(n_estimators=100, random_state=42), X_train_s, yc_train,
@@ -112,9 +106,6 @@ metrics['model_comparison'] = {
     }
 }
 
-# ---------------------------------------------------------------------------
-# 3. Small hyperparameter search for the Random Forest candidates
-# ---------------------------------------------------------------------------
 param_grid = {
     'n_estimators': [100, 200],
     'max_depth': [None, 6, 10],
@@ -135,11 +126,7 @@ metrics['hyperparameter_search'] = {
     "regressor_rf_best_cv_r2": round(float(grid_reg.best_score_), 4),
 }
 
-# ---------------------------------------------------------------------------
-# 3b. Actually pick the winning model type instead of assuming Random Forest.
-# The tuned RF is compared against the plain baseline on the same CV folds;
-# whichever generalizes better on cross-validation is the one we deploy.
-# ---------------------------------------------------------------------------
+
 if grid_clf.best_score_ >= acc_logreg:
     clf = grid_clf.best_estimator_
     clf_choice = "random_forest (tuned)"
@@ -162,9 +149,6 @@ metrics['deployed_model'] = {
                  "defaulting to Random Forest."
 }
 
-# ---------------------------------------------------------------------------
-# 4. Final evaluation on the held-out test set
-# ---------------------------------------------------------------------------
 yc_pred = clf.predict(X_test_s)
 acc = accuracy_score(yc_test, yc_pred)
 prec = precision_score(yc_test, yc_pred, zero_division=0)
@@ -193,9 +177,7 @@ print(f"Classifier test accuracy: {acc:.2%} (precision {prec:.2f}, recall {rec:.
 print(f"Regressor test R2: {r2:.3f} (RMSE {rmse:.2f})")
 print(f"Leakage check -> accuracy with G1/G2: {acc_with_leak:.2%} vs without: {acc_without_leak:.2%}")
 
-# ---------------------------------------------------------------------------
-# Save models + metrics
-# ---------------------------------------------------------------------------
+
 pickle.dump(clf, open('clf_model.pkl', 'wb'))
 pickle.dump(reg, open('reg_model.pkl', 'wb'))
 pickle.dump(scaler, open('scaler.pkl', 'wb'))
@@ -204,9 +186,7 @@ pickle.dump(FEATURES, open('features.pkl', 'wb'))
 with open('metrics.json', 'w') as f:
     json.dump(metrics, f, indent=2)
 
-# ---------------------------------------------------------------------------
-# Charts
-# ---------------------------------------------------------------------------
+
 COLORS = {'blue': '#378ADD', 'green': '#639922', 'red': '#E24B4A', 'purple': '#7F77DD',
           'amber': '#EF9F27', 'teal': '#1D9E75'}
 plt.rcParams.update({'font.family': 'sans-serif', 'font.size': 11,
