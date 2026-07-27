@@ -7,11 +7,7 @@ A machine learning web application that predicts student academic performance an
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.3-orange?style=flat&logo=scikit-learn)
 ![Tests](https://img.shields.io/badge/Tests-pytest-blueviolet?style=flat)
 
-Live Demo
-[View Live App]
 
-Screenshots
-> Add screenshots of your home page, result page, and dashboard here
 
 What It Does
 - Predicts whether a student will **Pass or Fail** their final exam
@@ -24,7 +20,6 @@ Model Performance
 All numbers below are written to `metrics.json` by `model.py` on every training run — nothing here is hand-typed, so it can't go stale.
 
 | Metric | Score |
-|---|---|
 | Classifier Accuracy (held-out test set) | **87%** |
 | Classifier Precision / Recall / F1 | 0.92 / 0.84 / 0.88 |
 | Regressor R² Score (held-out test set) | **0.85** |
@@ -35,7 +30,7 @@ Model selection — not just "we used Random Forest"
 Three candidate models were cross-validated on identical folds for both tasks (Random Forest, Logistic/Linear Regression), and the winner by cross-validation score was deployed:
 
 | Task | Winner | CV Score | Runner-up | CV Score |
-|---|---|---|---|---|
+
 | Classification | Logistic Regression | 92.3% acc | Random Forest (tuned) | 88.8% acc |
 | Regression | Linear Regression | R² = 0.882 | Random Forest (tuned) | R² = 0.781 |
 
@@ -45,7 +40,7 @@ Data leakage disclosure
 `G1` and `G2` (1st/2nd period grades) are extremely predictive of the final grade `G3` by construction — they're essentially earlier measurements of the same thing you're trying to predict. This is a known property of the underlying [UCI Student Performance dataset](https://archive.ics.uci.edu/dataset/320/student+performance).
 
 | | With G1/G2 | Without G1/G2 |
-|---|---|---|
+
 | Classifier CV accuracy | 87.0% | 63.8% |
 | Regressor CV R² | 0.805 | 0.214 |
 
@@ -53,7 +48,7 @@ The deployed model **keeps** G1/G2 because the product intentionally asks users 
 
 Tech Stack
 | Layer | Technology |
-|---|---|
+
 | Backend | Python, Flask |
 | ML | Scikit-learn — Logistic/Linear Regression (deployed), Random Forest (compared, tuned via GridSearchCV) |
 | Validation | Stratified/K-Fold cross-validation, train/test split, confusion matrix |
