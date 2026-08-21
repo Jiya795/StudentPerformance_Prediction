@@ -1,14 +1,4 @@
-"""
-Basic test suite for the Student Performance Predictor Flask app.
 
-Run with:
-    pytest tests/ -v
-
-These are intentionally lightweight (no mocking framework, no fixtures
-beyond the Flask test client) — the goal is to catch obvious regressions
-in routing, validation, and the prediction pipeline, not to be a
-production-grade test suite.
-"""
 import os
 import sys
 

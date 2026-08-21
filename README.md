@@ -7,11 +7,6 @@ A machine learning web application that predicts student academic performance an
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.3-orange?style=flat&logo=scikit-learn)
 ![Tests](https://img.shields.io/badge/Tests-pytest-blueviolet?style=flat)
 
-Live Demo
-[View Live App]
-
-Screenshots
-> Add screenshots of your home page, result page, and dashboard here
 
 What It Does
 - Predicts whether a student will **Pass or Fail** their final exam

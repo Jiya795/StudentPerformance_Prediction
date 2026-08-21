@@ -45,10 +45,7 @@ FIELD_RANGES = {
 
 
 def parse_and_validate(source):
-    """Pull the model's input fields out of a form/JSON payload and validate
-    them. Raises ValueError with a human-readable message on the first
-    problem found, instead of letting an int() cast or a bad range blow up
-    somewhere deep inside sklearn."""
+
     data = {}
     for field, (lo, hi) in FIELD_RANGES.items():
         raw = source.get(field, None)
@@ -84,8 +81,7 @@ def get_tips(data):
 
 
 def run_prediction(data):
-    """Shared by the HTML form route and the JSON API route so both stay
-    in sync with exactly one prediction code path."""
+   
     X = pd.DataFrame([[data[f] for f in features]], columns=features)
     X_scaled = scaler.transform(X)
     result = int(clf.predict(X_scaled)[0])
@@ -132,16 +128,7 @@ def predict():
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():
-    """JSON API for programmatic use — same validation and prediction logic
-    as the HTML form, so integrations don't need a browser.
-
-    Example:
-        curl -X POST http://localhost:5000/api/predict \\
-             -H "Content-Type: application/json" \\
-             -d '{"studytime":3,"failures":0,"absences":4,"G1":14,"G2":15,
-                  "internet":1,"higher":1,"Medu":3,"Fedu":2,"health":4,
-                  "famrel":4,"freetime":3}'
-    """
+ 
     payload = request.get_json(silent=True)
     if payload is None:
         return jsonify({'error': 'Request body must be valid JSON.'}), 400
