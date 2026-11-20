@@ -16,11 +16,27 @@ The inputs are scaled with a StandardScaler before going into the models. The tr
 Some of the inputs used: studytime, failures, absences, G1, G2, internet, higher and a few more. The full list is in features.pkl.
 
 Project files
+
+
 app.py - the Flask app (routes and prediction logic)
+
+
 model.py - trains the models and saves the pickle files
+
+
 data.csv - dataset
+
+
 clf_model.pkl, reg_model.pkl, scaler.pkl, features.pkl - saved model files
+
+
 metrics.json - evaluation scores from training
+
+
 templates/ and static/ - HTML, CSS
+
+
 tests/ - a few pytest tests
+
+
 Procfile, requirements.txt, .python-version - needed for deployment
